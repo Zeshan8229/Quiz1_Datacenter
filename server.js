@@ -26,10 +26,16 @@ app.use(express.static(path.join(__dirname)));
 
 // ── Nodemailer transporter ───────────────────────────────────
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,       // false = STARTTLS on port 587 (not SSL/465)
+  requireTLS: true,    // force TLS upgrade - prevents fallback to plaintext
   auth: {
     user: EMAIL_ADDRESS,
     pass: EMAIL_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,  // avoids cert errors on some cloud hosts
   },
 });
 
