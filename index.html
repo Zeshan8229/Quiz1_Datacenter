@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Center Infrastructure & Operations – Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #020c18;
+    --bg-panel: #051a2e;
+    --bg-card: #071f35;
+    --accent-blue: #00d4ff;
+    --accent-cyan: #00ffcc;
+    --accent-orange: #ff6b00;
+    --accent-green: #00ff88;
+    --accent-red: #ff2244;
+    --text-primary: #e0f4ff;
+    --text-secondary: #7ab8d4;
+    --border-glow: rgba(0,212,255,0.3);
+    --panel-border: rgba(0,212,255,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content:'';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating server rack silhouettes */
+  body::after {
+    content:'';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 10% 80%, rgba(0,212,255,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 600px at 90% 20%, rgba(0,255,204,0.03) 0%, transparent 70%),
+      radial-gradient(ellipse 300px 300px at 50% 50%, rgba(0,80,160,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen { position: relative; z-index: 1; }
+
+  /* ============ HEADER ============ */
+  .site-header {
+    background: linear-gradient(135deg, #020c18 0%, #051a2e 50%, #020c18 100%);
+    border-bottom: 1px solid var(--accent-blue);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 30px rgba(0,212,255,0.2);
+  }
+
+  .header-logo {
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1.3;
+  }
+
+  .logo-sub { font-size: 10px; color: var(--text-secondary); letter-spacing: 1px; }
+
+  .header-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    padding: 4px 12px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%,100% { border-color: var(--accent-cyan); box-shadow: 0 0 0 rgba(0,255,204,0); }
+    50% { border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(0,255,204,0.3); }
+  }
+
+  /* ============ LANDING PAGE ============ */
+  #landing {
+    min-height: calc(100vh - 77px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .landing-card {
+    background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 48px 52px;
+    max-width: 640px;
+    width: 100%;
+    box-shadow: 0 0 60px rgba(0,212,255,0.08), 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .landing-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan), var(--accent-blue));
+    background-size: 200%;
+    animation: shimmer 3s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% } 100% { background-position: 200% }
+  }
+
+  .landing-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--accent-blue);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  .landing-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 36px;
+    letter-spacing: 1px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .info-box {
+    background: rgba(0,212,255,0.05);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+
+  .info-box-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+  }
+
+  .info-box-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    margin-top: 3px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-blue);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .form-input {
+    width: 100%;
+    background: rgba(0,20,40,0.8);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 6px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+    outline: none;
+  }
+
+  .form-input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 20px rgba(0,212,255,0.15);
+    background: rgba(0,30,60,0.8);
+  }
+
+  .form-input::placeholder { color: rgba(120,180,210,0.4); font-weight: 400; }
+
+  .btn-start {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #004a7c, #006fa6);
+    border: 1px solid var(--accent-blue);
+    border-radius: 8px;
+    color: var(--accent-blue);
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-start:hover {
+    background: linear-gradient(135deg, #005d9a, #0088cc);
+    box-shadow: 0 0 30px rgba(0,212,255,0.3);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .btn-start:active { transform: translateY(0); }
+
+  .notice {
+    margin-top: 24px;
+    padding: 14px 16px;
+    background: rgba(255,107,0,0.07);
+    border: 1px solid rgba(255,107,0,0.25);
+    border-radius: 6px;
+    font-size: 13px;
+    color: #ffaa55;
+    line-height: 1.6;
+  }
+
+  /* ============ QUIZ PAGE ============ */
+  #quiz { display: none; padding: 24px 20px 60px; max-width: 900px; margin: 0 auto; }
+
+  .quiz-topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    background: var(--bg-panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 14px 20px;
+  }
+
+  .candidate-info { font-size: 13px; color: var(--text-secondary); }
+  .candidate-name { font-family: 'Orbitron', monospace; font-size: 14px; color: var(--accent-cyan); font-weight: 700; }
+
+  .timer-display {
+    text-align: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent-green);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px currentColor;
+    transition: color 0.5s;
+  }
+
+  .timer-display.warning { color: var(--accent-orange); }
+  .timer-display.danger { color: var(--accent-red); animation: blink 0.5s linear infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .timer-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .progress-info { text-align: right; }
+  .progress-val { font-family: 'Orbitron', monospace; font-size: 16px; color: var(--accent-blue); font-weight: 700; }
+  .progress-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; }
+
+  .progress-bar-wrap {
+    background: rgba(0,212,255,0.08);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    height: 6px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 10px var(--accent-blue);
+  }
+
+  .question-card {
+    background: linear-gradient(135deg, var(--bg-panel), var(--bg-card));
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 32px 36px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent-blue), var(--accent-cyan));
+  }
+
+  .q-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-blue);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .q-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(0,20,40,0.6);
+    border: 1px solid rgba(0,212,255,0.12);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+    width: 100%;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent-blue);
+    background: rgba(0,100,180,0.15);
+    transform: translateX(4px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--accent-cyan);
+    background: rgba(0,255,204,0.1);
+    color: var(--accent-cyan);
+  }
+
+  .option-label {
+    width: 28px; height: 28px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+    transition: all 0.25s;
+  }
+
+  .option-btn.selected .option-label {
+    background: var(--accent-cyan);
+    color: #000;
+    border-color: var(--accent-cyan);
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  .nav-btn {
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 1px solid;
+  }
+
+  .btn-prev {
+    background: transparent;
+    border-color: rgba(0,212,255,0.3);
+    color: var(--text-secondary);
+  }
+
+  .btn-prev:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, #004a7c, #006fa6);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .btn-next:hover {
+    background: linear-gradient(135deg, #006fa6, #0099dd);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0,212,255,0.25);
+  }
+
+  .btn-submit-quiz {
+    background: linear-gradient(135deg, #7c2000, #a63000);
+    border-color: var(--accent-orange);
+    color: var(--accent-orange);
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 1px solid;
+  }
+
+  .btn-submit-quiz:hover {
+    background: linear-gradient(135deg, #a63000, #cc4400);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255,107,0,0.3);
+  }
+
+  .dot-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    padding: 14px 20px;
+    background: var(--bg-panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    max-height: 130px;
+    overflow-y: auto;
+  }
+
+  .dot {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.1);
+    cursor: pointer;
+    font-size: 9px;
+    font-family: 'Share Tech Mono', monospace;
+    color: rgba(0,212,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .dot:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .dot.answered { background: rgba(0,255,204,0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .dot.current { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(255,107,0,0.1); }
+
+  /* ============ RESULTS PAGE ============ */
+  #results { display: none; padding: 40px 20px 60px; max-width: 900px; margin: 0 auto; }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .result-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent-blue);
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+
+  .result-subtitle { font-size: 15px; color: var(--text-secondary); }
+
+  .score-showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+
+  .score-box {
+    background: linear-gradient(135deg, var(--bg-panel), var(--bg-card));
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 28px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-box.main-score { border-color: rgba(0,212,255,0.4); }
+  .score-box.correct-score { border-color: rgba(0,255,136,0.3); }
+  .score-box.wrong-score { border-color: rgba(255,34,68,0.3); }
+
+  .score-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .score-val.blue { color: var(--accent-blue); text-shadow: 0 0 30px rgba(0,212,255,0.5); }
+  .score-val.green { color: var(--accent-green); text-shadow: 0 0 30px rgba(0,255,136,0.5); }
+  .score-val.red { color: var(--accent-red); text-shadow: 0 0 30px rgba(255,34,68,0.4); }
+
+  .score-label { font-size: 12px; color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; }
+
+  .result-grade-banner {
+    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,255,204,0.05));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 12px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .grade-letter {
+    font-family: 'Orbitron', monospace;
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1;
+    min-width: 60px;
+  }
+
+  .grade-info-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .grade-info-sub { font-size: 14px; color: var(--text-secondary); }
+
+  .candidate-result-info {
+    background: var(--bg-panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .cri-item { font-size: 14px; color: var(--text-secondary); }
+  .cri-val { color: var(--accent-cyan); font-weight: 700; }
+
+  .review-section { margin-bottom: 30px; }
+
+  .review-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    color: var(--accent-blue);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .review-item {
+    background: var(--bg-panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 50px;
+  }
+
+  .review-item::before {
+    content: attr(data-num);
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    border-right: 1px solid var(--panel-border);
+  }
+
+  .review-item.correct { border-left: 3px solid var(--accent-green); }
+  .review-item.incorrect { border-left: 3px solid var(--accent-red); }
+  .review-item.skipped { border-left: 3px solid rgba(120,180,210,0.3); }
+
+  .ri-question { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; line-height: 1.5; }
+  .ri-answer { font-size: 13px; color: var(--text-secondary); }
+  .ri-your { color: var(--accent-orange); }
+  .ri-correct { color: var(--accent-green); }
+
+  .email-status {
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--accent-green);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .email-status.error {
+    background: rgba(255,34,68,0.05);
+    border-color: rgba(255,34,68,0.2);
+    color: var(--accent-red);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+
+  /* Unanswered warning */
+  .unanswered-warn {
+    background: rgba(255,107,0,0.1);
+    border: 1px solid rgba(255,107,0,0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--accent-orange);
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  .scan-line {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.4), transparent);
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  @keyframes scan {
+    0% { top: 0; opacity: 0.8; }
+    100% { top: 100%; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scan-line"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-logo">
+    <!-- PTCL Official Logo accurate SVG recreation -->
+    <svg width="148" height="52" viewBox="0 0 370 110" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <defs>
+        <radialGradient id="gG" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#00b359"/>
+          <stop offset="100%" stop-color="#007030"/>
+        </radialGradient>
+        <clipPath id="gC"><circle cx="52" cy="55" r="47"/></clipPath>
+      </defs>
+      <!-- Globe circle -->
+      <circle cx="52" cy="55" r="47" fill="url(#gG)"/>
+      <!-- Latitude ellipses -->
+      <g clip-path="url(#gC)" fill="none" stroke="#fff" stroke-width="1.8" opacity="0.85">
+        <ellipse cx="52" cy="55" rx="47" ry="12"/>
+        <ellipse cx="52" cy="55" rx="47" ry="26"/>
+        <ellipse cx="52" cy="55" rx="47" ry="40"/>
+        <ellipse cx="52" cy="55" rx="16" ry="47"/>
+        <ellipse cx="52" cy="55" rx="32" ry="47"/>
+        <line x1="52" y1="8" x2="52" y2="102"/>
+        <line x1="5" y1="55" x2="99" y2="55"/>
+      </g>
+      <circle cx="52" cy="55" r="47" fill="none" stroke="#005520" stroke-width="2.5"/>
+      <!-- ptcl bold green text -->
+      <text x="115" y="71" font-family="Arial Black, Arial" font-weight="900" font-size="55" fill="#007030" letter-spacing="-2">ptcl</text>
+      <!-- green underline bar -->
+      <rect x="115" y="77" width="218" height="3.5" rx="1.5" fill="#00b359"/>
+      <!-- sub tagline -->
+      <text x="115" y="96" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4a9e75" letter-spacing="1">Pakistan Telecommunication Co. Ltd.</text>
+    </svg>
+    <div style="width:1px;height:44px;background:rgba(0,212,255,0.2);margin:0 16px 0 10px;flex-shrink:0"></div>
+    <div>
+      <div class="logo-text">Data Center Operations</div>
+      <div class="logo-sub">Infrastructure &amp; Operations Division</div>
+    </div>
+  </div>
+  <div class="header-badge">&#11043; ASSESSMENT PORTAL</div>
+</header>
+
+<!-- LANDING / REGISTRATION -->
+<div id="landing" class="screen">
+  <div class="landing-card">
+    <div class="landing-title">DATA CENTER INFRASTRUCTURE</div>
+    <div class="landing-sub">Operations & Infrastructure Systems — Official Assessment</div>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="info-box-val">100</div>
+        <div class="info-box-label">Questions</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-val">60</div>
+        <div class="info-box-label">Minutes</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-val">MCQ</div>
+        <div class="info-box-label">Format</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="candidateName">▸ Candidate Full Name</label>
+      <input class="form-input" type="text" id="candidateName" placeholder="Enter your full name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="empId">▸ Employee ID</label>
+      <input class="form-input" type="text" id="empId" placeholder="Enter your employee ID">
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">⬡ INITIATE ASSESSMENT</button>
+
+    <div class="notice">
+      ⚠ Once started, the 60-minute countdown begins and cannot be paused. Ensure you complete all 100 questions before time expires. Results will be automatically emailed upon submission.
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div id="quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="candidate-info">
+      <div style="font-size:11px;color:var(--text-secondary);letter-spacing:1px;">CANDIDATE</div>
+      <div class="candidate-name" id="dispName">—</div>
+      <div style="font-size:12px;color:var(--text-secondary);">ID: <span id="dispId" style="color:var(--accent-blue)">—</span></div>
+    </div>
+    <div>
+      <div class="timer-display" id="timerDisplay">60:00</div>
+      <div class="timer-label">TIME REMAINING</div>
+    </div>
+    <div class="progress-info">
+      <div class="progress-val"><span id="answeredCount">0</span>/100</div>
+      <div class="progress-label">ANSWERED</div>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <div class="dot-nav" id="dotNav"></div>
+
+  <div class="question-card">
+    <div class="q-num" id="qNum">QUESTION 1 OF 100</div>
+    <div class="q-text" id="qText"></div>
+    <div class="options-grid" id="optionsGrid"></div>
+  </div>
+
+  <div class="unanswered-warn" id="unansweredWarn">⚠ You have unanswered questions. Submit anyway?</div>
+
+  <div class="quiz-nav">
+    <button class="nav-btn btn-prev" onclick="navigate(-1)">◀ PREV</button>
+    <button class="btn-submit-quiz" onclick="confirmSubmit()">⬡ SUBMIT QUIZ</button>
+    <button class="nav-btn btn-next" onclick="navigate(1)">NEXT ▶</button>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="results" class="screen">
+  <div class="result-header">
+    <div class="result-title">ASSESSMENT COMPLETE</div>
+    <div class="result-subtitle">Data Center Infrastructure & Operations Training</div>
+  </div>
+
+  <div class="candidate-result-info" id="candidateResultInfo"></div>
+
+  <div class="score-showcase">
+    <div class="score-box main-score">
+      <div class="score-val blue" id="scorePercent">—</div>
+      <div class="score-label">Score %</div>
+    </div>
+    <div class="score-box correct-score">
+      <div class="score-val green" id="scoreCorrect">—</div>
+      <div class="score-label">Correct</div>
+    </div>
+    <div class="score-box wrong-score">
+      <div class="score-val red" id="scoreWrong">—</div>
+      <div class="score-label">Incorrect / Skipped</div>
+    </div>
+  </div>
+
+  <div class="result-grade-banner" id="gradeBanner"></div>
+
+  <div class="email-status" id="emailStatus">
+    📧 Sending results to hassanusama284@gmail.com…
+  </div>
+
+  <div class="review-section">
+    <div class="review-title">▸ COMPLETE QUESTION REVIEW</div>
+    <div id="reviewList"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// QUESTION BANK – 100 MCQs
+// ============================================================
+const ALL_QUESTIONS = [
+  // --- INTRODUCTION & ARCHITECTURE ---
+  { q:"What is the primary objective of a data center?", options:["Store archived data only","Achieve 100% uptime and reliability","Provide office space for IT staff","Manage social media infrastructure"], ans:1 },
+  { q:"Which of the following is NOT listed as a main pillar of a data center?", options:["IT Infrastructure","Power Systems","Human Resources","Cooling Systems"], ans:2 },
+  { q:"Which system monitors the environment and building in a data center?", options:["VESDA and FM200","EMS, BMS, and DCIM","ATS and STS","CRAC and CRAH"], ans:1 },
+  { q:"Fire protection in a data center typically involves which two systems?", options:["UPS and ATS","FSS and VESDA","CRAC and CRAH","PDU and STS"], ans:1 },
+  { q:"A data center is best described as:", options:["A cloud-only virtual environment","A centralized facility running digital services 24/7","A mobile computing platform","A distributed network of home computers"], ans:1 },
+
+  // --- DATA CENTER TIERS ---
+  { q:"Which Tier level offers the highest uptime of ~99.995%?", options:["Tier I","Tier II","Tier III","Tier IV"], ans:3 },
+  { q:"Tier I data centers have an approximate annual downtime of:", options:["26 minutes","1.6 hours","22 hours","28.8 hours"], ans:3 },
+  { q:"Which Tier allows maintenance without requiring system shutdown?", options:["Tier I","Tier II","Tier III","Tier IV"], ans:2 },
+  { q:"Tier IV data centers use which power/cooling path configuration?", options:["Single path, no backup","Single path with backup components","Multiple paths, one active","Fully redundant active-active paths"], ans:3 },
+  { q:"Tier II data centers have an approximate annual downtime of:", options:["28.8 hours","22 hours","1.6 hours","26 minutes"], ans:1 },
+  { q:"Which Tier requires a full system shutdown for maintenance?", options:["Tier I","Tier II","Tier III","Tier IV"], ans:0 },
+  { q:"A 'Fault Tolerant' data center corresponds to which Tier?", options:["Tier I","Tier II","Tier III","Tier IV"], ans:3 },
+
+  // --- POWER INFRASTRUCTURE ---
+  { q:"What device steps down high-voltage utility power entering a data center?", options:["UPS","Transformer","Generator","PDU"], ans:1 },
+  { q:"Which formula represents Watt's Law?", options:["P = V / I","P = V * I","P = I² / V","P = V + I"], ans:1 },
+  { q:"An ATS (Automatic Transfer Switch) uses which switching principle?", options:["Make before break","Break before make","Simultaneous transfer","Soft switching"], ans:1 },
+  { q:"What is the switching speed of an STS (Static Transfer Switch)?", options:["<20 ms","<50 ms",">50 ms","<5 ms"], ans:0 },
+  { q:"A PDU in a data center is used to:", options:["Provide UPS battery backup","Distribute power to IT equipment","Monitor temperature and humidity","Switch between utility and generator power"], ans:0 },
+  { q:"An ATS is described as which type of switching device?", options:["Electronic, fast","Mechanical, slow","Optical, medium","Digital, instant"], ans:1 },
+  { q:"Which renewable energy source is NOT always available depending on location?", options:["Solar Energy","Wind Energy","Tidal Power","Hydro Electricity"], ans:2 },
+  { q:"A diesel generator in a data center is primarily used for:", options:["Instant power during grid failure","Long-term backup power","Voltage regulation","Fire suppression activation"], ans:1 },
+  { q:"Three-phase power consists of how many wires?", options:["Three","Four","Five","Six"], ans:2 },
+  { q:"The three phase wires are commonly referred to as:", options:["A, B, C","X, Y, Z","RST","L, N, G"], ans:2 },
+  { q:"Which color represents the neutral wire in the described color scheme?", options:["Red","Blue","Yellow","Black"], ans:3 },
+  { q:"Three-phase to single-phase conversion is performed at which equipment?", options:["UPS","ATS","Distribution boards or PDUs","Transformer"], ans:2 },
+  { q:"Maximum acceptable phase load imbalance is approximately:", options:["5%","10–15%","25%","50%"], ans:1 },
+  { q:"A neutral conductor rated at 200% is recommended when:", options:["Voltage exceeds 400V","High harmonic load or high phase imbalance exists","Generator is running","STS is engaged"], ans:1 },
+  { q:"Power distribution within a data center should be:", options:["Fixed and rigid","Reliable, scalable, and flexible","Only overhead","Only under raised floor"], ans:1 },
+  { q:"Common Mode Noise (CMN) is the voltage between:", options:["Phase and Phase","Neutral and Ground","Phase and Neutral","Ground and Phase"], ans:1 },
+  { q:"The recommended maximum Common Mode Noise per general vendor guidelines is:", options:["1 Volt","2 Volts","3 Volts","5 Volts"], ans:2 },
+  { q:"Ground resistance in a data center should ideally be:", options:["<1 Ohm, not exceeding 5 Ohms","<5 Ohms, not exceeding 10 Ohms","<10 Ohms","<0.5 Ohms"], ans:0 },
+  { q:"A microgrid can operate in which mode during main grid outages?", options:["Grid-tied only","Island mode","Off-grid only","Bypass mode"], ans:1 },
+
+  // --- UPS SYSTEMS ---
+  { q:"What does UPS stand for?", options:["Unified Power Supply","Uninterruptible Power Supply","Universal Power Switch","Unregulated Power Source"], ans:1 },
+  { q:"Which UPS technology uses electronic components like rectifier, inverter, and batteries?", options:["Dynamic UPS","Static UPS","Flywheel UPS","Rotary UPS"], ans:1 },
+  { q:"Dynamic UPS systems store energy using:", options:["Lead-acid batteries","Lithium-ion cells","Flywheel (kinetic energy)","Capacitors"], ans:2 },
+  { q:"Which IEC class of UPS is required for mission-critical data centers?", options:["VFD","VI","VFI","VFS"], ans:2 },
+  { q:"An Offline/Standby UPS has a transfer time of up to:", options:["2 ms","4 ms","8 ms","12–14 ms"], ans:3 },
+  { q:"Which UPS type completely isolates the load from the utility input?", options:["VFD – Offline","VI – Line Interactive","VFI – True Online Double Conversion","Dynamic rotary"], ans:2 },
+  { q:"Static UPS batteries typically need replacement every how many years for a 5-year design life?", options:["1–2 years","3–4 years","5–6 years","7–8 years"], ans:1 },
+  { q:"Dynamic UPS systems are typically available starting from which kVA rating?", options:["100 kVA","250 kVA","500 kVA","1000 kVA"], ans:2 },
+  { q:"A VFD-class UPS is suitable for:", options:["Mission-critical data centers","Non-critical loads only","Server rooms","Generator backup systems"], ans:1 },
+  { q:"What is the main advantage of a Dynamic UPS over Static UPS?", options:["Cheaper to purchase","No batteries required for energy storage","Smaller physical footprint","Lower noise level"], ans:1 },
+
+  // --- BATTERY TECHNOLOGIES ---
+  { q:"Which battery type uses liquid electrolyte with lead plates fully submerged?", options:["Flooded Cell","SLA/VRLA","Lithium-Ion","Nickel Cadmium"], ans:0 },
+  { q:"VRLA batteries are also known as:", options:["Flooded Cell","Sealed Lead Acid","Lithium Iron Phosphate","Nickel Metal Hydride"], ans:1 },
+  { q:"The expected lifespan of Flooded Cell (wet cell) batteries is:", options:["3–5 years","5–8 years","10–20 years","20–30 years"], ans:2 },
+  { q:"Which battery technology requires a dedicated battery room with ventilation due to hydrogen gas?", options:["SLA/VRLA","Lithium-Ion","Flooded Cell","Nickel Cadmium"], ans:2 },
+  { q:"SLA/VRLA batteries have an approximate lifespan of:", options:["3–5 years","8–10 years","15–20 years","25+ years"], ans:0 },
+  { q:"Four main UPS battery technologies include Flooded Cell, SLA/VRLA, Lithium-Ion, and:", options:["Lead Carbon","Zinc-Air","Nickel Cadmium","Sodium Sulfur"], ans:2 },
+
+  // --- COOLING SYSTEMS ---
+  { q:"What does CRAC stand for?", options:["Computer Room Air Conditioner","Central Rack Air Cooler","Cooling Rack Air Circuit","Compressed Room Air Control"], ans:0 },
+  { q:"What does CRAH stand for?", options:["Computer Room Air Handler","Cooling Rack Air Hub","Central Room Air Heating","Compressed Room Air Humidity"], ans:0 },
+  { q:"The hot aisle/cold aisle arrangement is used in data centers to:", options:["Maximize rack density","Separate hot exhaust air from cold supply air","Reduce cabling complexity","Improve power distribution"], ans:1 },
+  { q:"Blanking panels in server racks are used to:", options:["Protect against electrical surges","Prevent hot air recirculation","Support heavier servers","Improve network connectivity"], ans:1 },
+  { q:"PUE stands for:", options:["Power Usage Efficiency","Power Utilization Effectiveness","Power Unit Efficiency","Peak Usage Energy"], ans:1 },
+  { q:"An ideal PUE value is:", options:["2.0","1.5","1.0","0.5"], ans:2 },
+  { q:"In-row cooling places air conditioners:", options:["Above the server room ceiling","Under the raised floor","Between the rack rows","Outside the building"], ans:2 },
+  { q:"A Rear Door Heat Exchanger (RDHx) is typically rated at:", options:["5 kW and above","10 kW and above","15 kW and above","25 kW and above"], ans:2 },
+  { q:"Liquid Immersion Cooling submerges components in:", options:["Water","Thermally but not electrically conductive dielectric liquid","Electrically conductive coolant","Refrigerant R-134a"], ans:1 },
+  { q:"Direct-to-Chip (D2C) cooling circulates liquid to:", options:["The entire server rack","CPUs, GPUs, and high-heat components","The room perimeter","PDU and UPS units"], ans:1 },
+  { q:"Geothermal cooling leverages:", options:["Solar panel arrays","Stable underground temperatures","Wind turbine power","River water streams"], ans:1 },
+  { q:"Overhead ducted cooling dumps cold air:", options:["Into the raised floor void","Directly in front of the racks","At the top of the building","Behind the racks"], ans:1 },
+  { q:"Self-contained racks limit cooling to approximately:", options:["5–10 kW per rack","18–35 kW per rack","50–75 kW per rack","100+ kW per rack"], ans:1 },
+  { q:"Which liquid cooling type is safe for both humans and equipment?", options:["Water based","Liquid CO2 based","Dielectric based","Refrigerant based"], ans:2 },
+  { q:"Liquid Immersion Cooling can handle compute densities exceeding:", options:["10 kW per unit","50 kW per unit","100 kW per bath/unit","200 kW per unit"], ans:2 },
+  { q:"Air Assisted Liquid Cooling (AALC) is best described as:", options:["Pure liquid cooling only","A hybrid combining air and liquid cooling","Air cooling with no liquid","Geothermal-based air cooling"], ans:1 },
+  { q:"Which cooling method has about 10X heat rejection capacity compared to air cooling?", options:["In-row cooling","Rear door heat exchanger","Liquid immersion cooling","Overhead duct cooling"], ans:2 },
+  { q:"A raised floor is typically used in data centers for:", options:["Cable management and air distribution","Fire suppression gas release","UPS battery storage","Generator fuel supply"], ans:0 },
+  { q:"CRAC units are typically based on which cooling principle?", options:["Direct expansion or chilled water","Geothermal heat exchange","Air-side economization only","Adiabatic cooling"], ans:0 },
+  { q:"Hot aisle containment captures hot air from:", options:["Front of servers","Rear of servers","Top of racks","Side panels"], ans:1 },
+
+  // --- FIRE PROTECTION ---
+  { q:"Most fires in data centers originate from which source?", options:["Chemical leaks","Electrical sources","Water pipe bursts","Mechanical failures"], ans:1 },
+  { q:"VESDA stands for:", options:["Very Early Smoke Detection Apparatus","Very Efficient Suppression Detection Array","Volatile Emissions Sensing Detection Apparatus","Very Early Safety Detection Algorithm"], ans:0 },
+  { q:"VESDA is how many times more sensitive than standard smoke detectors?", options:["10 times","100 times","1000 times","10,000 times"], ans:2 },
+  { q:"FM200 is also chemically known as:", options:["CO2","HFC-227","Novec 1230","Halon 1301"], ans:1 },
+  { q:"FM200 gas cylinders must be located within approximately how many meters of the protected room?", options:["5–10 meters","20–40 meters","100 meters","No distance restriction"], ans:1 },
+  { q:"Novec 1230 remains in the atmosphere for approximately:", options:["5 hours","5 days","5 weeks","5 months"], ans:1 },
+  { q:"Novec 1230 production was discontinued by the end of which year?", options:["2023","2024","2025","2026"], ans:2 },
+  { q:"Which handheld extinguisher class is used for electrical fires in data centers?", options:["Class A","Class B","Class C","Class D"], ans:2 },
+  { q:"Class A extinguishers are used for fires involving:", options:["Flammable liquids","Ordinary combustibles (wood, cloth, paper)","Energized electrical equipment","Combustible metals"], ans:1 },
+  { q:"For electrical fires near sensitive equipment, which extinguisher is preferred?", options:["Water-based","Dry chemical powder","Carbon dioxide","Foam"], ans:2 },
+  { q:"NFPA 75 and NFPA 72 are standards related to:", options:["Data center power systems","Fire detection and suppression for data centers","Cooling efficiency","Network cabling"], ans:1 },
+  { q:"NOAEL stands for:", options:["No Observed Adverse Effect Level","Normal Operating Acceptable Exposure Limit","Non-Operational Air Exhaust Level","Network Operational Alert Entry Log"], ans:0 },
+  { q:"Which fire suppression gas is described as environmentally safe and a 'green gas'?", options:["FM200","CO2","Halon 1301","Novec 1230"], ans:3 },
+  { q:"VESDA works by:", options:["Thermal detection via heat sensors","Air sampling and contamination analysis","Infrared beam detection","Ionization chamber sensing"], ans:1 },
+  { q:"A drop-in replacement for Novec 1230 is:", options:["FM200","CO2","Fike SF 1230","Halon 1301"], ans:2 },
+
+  // --- MONITORING & SECURITY ---
+  { q:"DCIM stands for:", options:["Data Center Integrated Management","Data Center Infrastructure Management","Digital Circuit Interface Module","Distributed Computing Infrastructure Monitor"], ans:1 },
+  { q:"BMS in a data center stands for:", options:["Battery Management System","Building Management System","Bandwidth Monitoring Service","Backup Management Software"], ans:1 },
+  { q:"EMS in a data center context stands for:", options:["Electrical Management System","Environment Monitoring System","Emergency Management Service","Equipment Maintenance Schedule"], ans:1 },
+  { q:"Which system provides physical access control in a data center?", options:["DCIM","VESDA","Access Control System","BMS"], ans:2 },
+  { q:"CCTV in a data center is primarily used for:", options:["Network monitoring","Physical security surveillance","Power management","Cooling control"], ans:1 },
+
+  // --- POWER CONCEPTS ---
+  { q:"Phase balancing in a data center requires:", options:["All equipment on one phase","Equal load distribution across all three phases","Random distribution of equipment","Only single-phase equipment"], ans:1 },
+  { q:"In the phase balancing example, running 50kW on a 90kW UPS is approximately:", options:["30% load","60% load","90% load","100% load"], ans:1 },
+  { q:"Installing all new equipment on a single phase that is already near capacity can cause:", options:["UPS to charge faster","UPS to switch to bypass mode","Generator to start automatically","STS to engage"], ans:1 },
+  { q:"Busbar Trunking (BBT) is a type of:", options:["Battery technology","Power distribution method","Cooling system","Fire suppression gas"], ans:1 },
+  { q:"A STS (Static Transfer Switch) is described as:", options:["A mechanical device","An electronic fast-switching device","A battery backup device","A cooling control valve"], ans:1 },
+  { q:"Dual cord equipment in a data center refers to:", options:["Equipment with two network connections","Equipment with two independent power supplies","Servers with two CPUs","Storage with two disk controllers"], ans:1 },
+  { q:"Providing dual power sources to each rack is best practice because:", options:["It doubles power consumption","It provides redundancy in case one source fails","It reduces cooling requirements","It simplifies cable management"], ans:1 },
+  { q:"In three-phase power, L-1 (red wire) combined with neutral and ground creates:", options:["Three-phase power","Single-phase L-1","Double-phase power","Neutral-only circuit"], ans:1 },
+  { q:"Which conductor may need to be rated at 200% in a computer room with high harmonic loads?", options:["Phase conductor","Neutral conductor","Ground conductor","Equipment bonding conductor"], ans:1 },
+  { q:"A microgrid combines which types of distributed energy resources? (Select best answer)", options:["Only solar panels","Only diesel generators","Solar, wind, batteries, generators, and CHP systems","Only wind turbines and batteries"], ans:2 },
+
+  // --- COOLING ADVANCED ---
+  { q:"D2C cooling stands for:", options:["Dual-to-Core","Direct-to-Chip","Dynamic-to-Cooler","Distributed-to-Cabinet"], ans:1 },
+  { q:"Air Assisted Liquid Cooling (AALC) reduces reliance on which system?", options:["UPS systems","Air conditioning units","Fire suppression","Generator sets"], ans:1 },
+  { q:"Which cooling method requires no raised floor and low ceiling height?", options:["CRAC raised-floor cooling","Overhead ducted cooling","In-row cooling","Liquid immersion"], ans:2 },
+  { q:"A high-density rack cooling solution where cooling modules are placed at the back of the rack is called:", options:["In-row cooling","Rear Door Heat Exchanger","Self-contained rack cooling","Floor-mount supplemental cooling"], ans:1 },
+  { q:"Supplemental floor-mount cooling systems collect cold air from:", options:["Above the ceiling","Under the raised floor","From outdoor air economizers","From the side walls"], ans:1 },
+  { q:"Hot air scavenging systems collect hot air at the:", options:["Front of the rack","Top of the building","Point of generation and route to CRAC","Cold aisle"], ans:2 },
+  { q:"Which cooling option is NOT suitable for a non-raised floor environment?", options:["In-row cooling","Overhead ducted cooling","Traditional raised-floor CRAC","Rear door heat exchanger"], ans:2 },
+  { q:"Liquid CO2-based self-contained rack cooling is:", options:["Safe for humans, safe for equipment","Not safe for humans, safe for equipment","Safe for humans, not safe for equipment","Not safe for humans, not safe for equipment"], ans:1 },
+  { q:"Geothermal cooling reduces which environmental impact?", options:["Increases carbon emissions","Lowers carbon emissions","Has no effect on emissions","Only affects water usage"], ans:1 },
+  { q:"Immersion cooling can handle per-rack densities of how many times higher than traditional cooling?", options:["2–3 times","5 times","10–20 times","50 times"], ans:2 },
+
+  // --- GENERAL KNOWLEDGE ---
+  { q:"The training was prepared by:", options:["Syed Asad Nizam Shah","Syed Saad Ali","Usama Hassan and Zeshan Ahmed","Syed Asad Nizam Shah and Zeshan Ahmed"], ans:2 },
+  { q:"The training was reviewed by:", options:["Usama Hassan","Syed Saad Ali (SM – DC South)","Zeshan Ahmed","Syed Asad Nizam Shah"], ans:1 },
+  { q:"Who approved this training material?", options:["Usama Hassan","Zeshan Ahmed","Syed Saad Ali","Syed Asad Nizam Shah (GD – DC)"], ans:3 },
+  { q:"Tier III uptime is approximately:", options:["99.671%","99.741%","99.982%","99.995%"], ans:2 },
+  { q:"Which Tier has approximately 1.6 hours of annual downtime?", options:["Tier I","Tier II","Tier III","Tier IV"], ans:2 },
+  { q:"An SRG (Signal Reference Grid) in a data center is used for:", options:["Power distribution","RF/ESD discharge path","Fire suppression","Cooling management"], ans:1 },
+  { q:"Clean ground in a data center requires:", options:["Shared with building electrical system","Separate ground bar connected to all metal items","Only connected to UPS systems","Only connected to server racks"], ans:1 },
+  { q:"Which mode does a Dynamic UPS use kinetic energy from the flywheel?", options:["Normal utility mode","Changeover to diesel mode","Diesel supply mode","Return to normal mode"], ans:1 },
+  { q:"In the phase balancing example, total UPS capacity is:", options:["50 kW","70 kW","90 kW","120 kW"], ans:2 },
+  { q:"HSSD stands for:", options:["High Speed Smoke Detector","Highly Sensitive Smoke Detection","High-Suction Safety Detection","Heat Sensor Suppression Device"], ans:1 },
+  { q:"FM200 is classified as which type of gas?", options:["High-pressure gas","Low-pressure gas","Neutral gas","Inert gas"], ans:1 },
+  { q:"Zinc whiskers in a data center can contribute to:", options:["Improved cooling efficiency","Electrical fires and equipment failures","Better grounding","Higher PUE values"], ans:1 },
+  { q:"Which UPS classification is Voltage and Frequency Independent?", options:["VFD","VI","VFI","VFS"], ans:2 },
+  { q:"The three-phase power phases are often color coded as:", options:["Red, Blue, Green","Red, Yellow, Blue","Black, White, Green","Orange, Yellow, Red"], ans:1 },
+  { q:"Which standard governs UPS classification (VFD, VI, VFI)?", options:["NFPA 75","EN 50091-3 / IEC 62040-3","IEEE 1100","ISO 14520"], ans:1 },
+];
+
+// ============================================================
+// QUIZ STATE
+// ============================================================
+let currentQ = 0;
+let answers = new Array(100).fill(null);
+let timerInterval = null;
+let secondsLeft = 60 * 60;
+let candidateName = '';
+let candidateId = '';
+let quizStartTime = null;
+
+// ============================================================
+// START QUIZ
+// ============================================================
+function startQuiz() {
+  candidateName = document.getElementById('candidateName').value.trim();
+  candidateId = document.getElementById('empId').value.trim();
+  if (!candidateName || !candidateId) {
+    alert('Please enter your full name and Employee ID to begin.');
+    return;
+  }
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  document.getElementById('dispName').textContent = candidateName;
+  document.getElementById('dispId').textContent = candidateId;
+  quizStartTime = new Date();
+  buildDotNav();
+  renderQuestion();
+  startTimer();
+}
+
+function buildDotNav() {
+  const nav = document.getElementById('dotNav');
+  nav.innerHTML = '';
+  for (let i = 0; i < 100; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' current' : '');
+    d.textContent = i + 1;
+    d.onclick = () => goTo(i);
+    d.id = `dot-${i}`;
+    nav.appendChild(d);
+  }
+}
+
+function goTo(idx) {
+  currentQ = idx;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = ALL_QUESTIONS[currentQ];
+  document.getElementById('qNum').textContent = `QUESTION ${currentQ + 1} OF 100`;
+  document.getElementById('qText').textContent = q.q;
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-label">${labels[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  // Update dots
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.className = 'dot';
+    if (answers[i] !== null) d.classList.add('answered');
+    if (i === currentQ) d.classList.add('current');
+  });
+
+  // Progress
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('answeredCount').textContent = answered;
+  document.getElementById('progressFill').style.width = (answered) + '%';
+}
+
+function selectAnswer(idx) {
+  answers[currentQ] = idx;
+  renderQuestion();
+}
+
+function navigate(dir) {
+  const next = currentQ + dir;
+  if (next >= 0 && next < 100) {
+    currentQ = next;
+    renderQuestion();
+    // Scroll dot into view
+    document.getElementById(`dot-${currentQ}`)?.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  }
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    const m = Math.floor(secondsLeft / 60);
+    const s = secondsLeft % 60;
+    const td = document.getElementById('timerDisplay');
+    td.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    td.className = 'timer-display';
+    if (secondsLeft <= 300) td.classList.add('warning');
+    if (secondsLeft <= 60) { td.classList.remove('warning'); td.classList.add('danger'); }
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      submitQuiz(true);
+    }
+  }, 1000);
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function confirmSubmit() {
+  const unanswered = answers.filter(a => a === null).length;
+  if (unanswered > 0) {
+    const warn = document.getElementById('unansweredWarn');
+    warn.textContent = `⚠ ${unanswered} question(s) unanswered. Click SUBMIT QUIZ again to confirm.`;
+    warn.style.display = 'block';
+    warn.onclick = () => submitQuiz(false);
+    return;
+  }
+  submitQuiz(false);
+}
+
+function submitQuiz(timeUp) {
+  clearInterval(timerInterval);
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  // Calculate score
+  let correct = 0;
+  ALL_QUESTIONS.forEach((q, i) => {
+    if (answers[i] === q.ans) correct++;
+  });
+  const wrong = 100 - correct;
+  const pct = correct;
+
+  // Grade
+  let grade, gradeColor, gradeMsg;
+  if (pct >= 90) { grade = 'A+'; gradeColor = '#00ff88'; gradeMsg = 'Outstanding Performance'; }
+  else if (pct >= 80) { grade = 'A'; gradeColor = '#00d4ff'; gradeMsg = 'Excellent Performance'; }
+  else if (pct >= 70) { grade = 'B'; gradeColor = '#00ccff'; gradeMsg = 'Good Performance'; }
+  else if (pct >= 60) { grade = 'C'; gradeColor = '#ffaa00'; gradeMsg = 'Satisfactory Performance'; }
+  else if (pct >= 50) { grade = 'D'; gradeColor = '#ff8800'; gradeMsg = 'Needs Improvement'; }
+  else { grade = 'F'; gradeColor = '#ff2244'; gradeMsg = 'Did Not Pass – Retake Recommended'; }
+
+  document.getElementById('scorePercent').textContent = pct + '%';
+  document.getElementById('scoreCorrect').textContent = correct;
+  document.getElementById('scoreWrong').textContent = wrong;
+
+  document.getElementById('gradeBanner').innerHTML = `
+    <div class="grade-letter" style="color:${gradeColor};text-shadow:0 0 30px ${gradeColor}66">${grade}</div>
+    <div>
+      <div class="grade-info-title">${gradeMsg}</div>
+      <div class="grade-info-sub">Score: ${correct}/100 correct answers</div>
+    </div>`;
+
+  const endTime = new Date();
+  const timeTaken = Math.floor((endTime - quizStartTime) / 1000);
+  const mm = Math.floor(timeTaken / 60), ss = timeTaken % 60;
+
+  document.getElementById('candidateResultInfo').innerHTML = `
+    <div class="cri-item">Name: <span class="cri-val">${candidateName}</span></div>
+    <div class="cri-item">Employee ID: <span class="cri-val">${candidateId}</span></div>
+    <div class="cri-item">Date: <span class="cri-val">${endTime.toLocaleDateString()}</span></div>
+    <div class="cri-item">Time Taken: <span class="cri-val">${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}</span></div>
+    <div class="cri-item">Status: <span class="cri-val" style="color:${pct >= 50 ? 'var(--accent-green)' : 'var(--accent-red)'}">${pct >= 50 ? 'PASSED' : 'FAILED'}</span></div>
+    <div class="cri-item">Grade: <span class="cri-val" style="color:${gradeColor}">${grade}</span></div>`;
+
+  // Review list
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  ALL_QUESTIONS.forEach((q, i) => {
+    const userAns = answers[i];
+    const isCorrect = userAns === q.ans;
+    const skipped = userAns === null;
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (skipped ? 'skipped' : isCorrect ? 'correct' : 'incorrect');
+    div.setAttribute('data-num', i + 1);
+    div.innerHTML = `
+      <div class="ri-question">${q.q}</div>
+      <div class="ri-answer">
+        ${skipped ? '<span style="color:var(--text-secondary)">Not answered</span>' :
+          `Your answer: <span class="ri-your">${q.options[userAns]}</span>`}
+        ${!isCorrect ? ` | Correct: <span class="ri-correct">${q.options[q.ans]}</span>` : ' ✔'}
+      </div>`;
+    reviewList.appendChild(div);
+  });
+
+  // Send email automatically
+  sendResultEmail(candidateName, candidateId, pct, correct, wrong, grade, gradeMsg, endTime.toLocaleString(), `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`);
+}
+
+async function sendResultEmail(name, empId, pct, correct, wrong, grade, gradeMsg, datetime, timeTaken) {
+  const TO_EMAIL = 'hassanusama284@gmail.com';
+  const emailStatus = document.getElementById('emailStatus');
+  emailStatus.innerHTML = '📧 Sending result email to ' + TO_EMAIL + '…';
+  emailStatus.className = 'email-status';
+
+  try {
+    const res = await fetch('/send-result', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, empId, pct, correct, wrong, grade, gradeMsg, datetime, timeTaken })
+    });
+    const data = await res.json();
+    if (data.success) {
+      emailStatus.innerHTML = '✅ Result email sent automatically to <strong>' + TO_EMAIL + '</strong>';
+      emailStatus.className = 'email-status';
+    } else {
+      throw new Error(data.message || 'Server error');
+    }
+  } catch (e) {
+    emailStatus.innerHTML = '❌ Email failed: ' + e.message + '. Make sure the local server is running (<code>npm start</code>).';
+    emailStatus.className = 'email-status error';
+  }
+}
+</script>
+</body>
+</html>

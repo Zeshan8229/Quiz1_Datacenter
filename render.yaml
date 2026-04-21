@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ptcl-dc-assessment
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: EMAIL_ADDRESS
+        value: hassanusama284@gmail.com
+      - key: EMAIL_PASSWORD
+        sync: false   # You will enter this manually in Render dashboard (never commit passwords)
+    autoDeploy: true
