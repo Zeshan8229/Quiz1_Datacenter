@@ -1208,7 +1208,8 @@ async function sendResultEmail(name, empId, pct, correct, wrong, grade, gradeMsg
   emailStatus.className = 'email-status';
 
   try {
-    const res = await fetch('/send-result', {
+    const res = await fetch('https://ample-compassion-production.up.railway.app/send-result', {
+    //const res = await fetch('/send-result', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, empId, pct, correct, wrong, grade, gradeMsg, datetime, timeTaken })
